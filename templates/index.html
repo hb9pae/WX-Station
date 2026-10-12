@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ station_name }} - Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="station-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            <circle cx="12" cy="12" r="5"/>
+          </svg>
+        </div>
+        <div>
+          <h1 id="station-title">{{ station_name }}</h1>
+          <div class="station-meta">
+            <span class="badge badge-alt">{{ altitude_m }} m ü. M.</span>
+            <span class="badge badge-sensor" id="sensor-badge">Sensor: --</span>
+            <span class="badge badge-status" id="status-badge"><span class="dot"></span> Online</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="clock-box">
+          <div class="clock-time" id="live-clock">--:--:--</div>
+          <div class="clock-date" id="live-date">--</div>
+        </div>
+        <div class="refresh-indicator">
+          <span>Letzte Messung: </span>
+          <strong id="last-update-time">Warte auf Daten...</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Live Data Gauges & Readings -->
+    <section class="section-live">
+      <h2 class="section-title">
+        <span>Aktuelle Messwerte (IST-Daten)</span>
+        <button id="btn-refresh-live" class="btn-icon" title="Jetzt aktualisieren">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+      </h2>
+
+      <div class="cards-grid">
+        <!-- Temperature Card -->
+        <div class="card live-card card-temp">
+          <div class="card-header">
+            <h3>Temperatur</h3>
+            <span class="card-icon">🌡️</span>
+          </div>
+          <div class="gauge-wrapper">
+            <svg id="gauge-temp" class="gauge-svg" viewBox="0 0 200 120"></svg>
+          </div>
+          <div class="live-values">
+            <div class="primary-val"><span id="val-temp">--</span><span class="unit">°C</span></div>
+            <div class="sub-val">Taupunkt: <strong id="val-dew">--</strong> °C</div>
+          </div>
+        </div>
+
+        <!-- Humidity Card -->
+        <div class="card live-card card-hum">
+          <div class="card-header">
+            <h3>Luftfeuchtigkeit</h3>
+            <span class="card-icon">💧</span>
+          </div>
+          <div class="gauge-wrapper">
+            <svg id="gauge-hum" class="gauge-svg" viewBox="0 0 200 120"></svg>
+          </div>
+          <div class="live-values">
+            <div class="primary-val"><span id="val-hum">--</span><span class="unit">%</span></div>
+            <div class="sub-val" id="hum-comfort-text">Zustand: --</div>
+          </div>
+        </div>
+
+        <!-- Pressure Card -->
+        <div class="card live-card card-press">
+          <div class="card-header">
+            <h3>Luftdruck (QNH)</h3>
+            <span class="card-icon">🧭</span>
+          </div>
+          <div class="gauge-wrapper">
+            <svg id="gauge-press" class="gauge-svg" viewBox="0 0 200 120"></svg>
+          </div>
+          <div class="live-values">
+            <div class="primary-val"><span id="val-press-qnh">--</span><span class="unit">hPa</span></div>
+            <div class="sub-val">Station (QFE): <strong id="val-press-qfe">--</strong> hPa</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- History & Statistics Section -->
+    <section class="section-history">
+      <div class="history-header">
+        <h2 class="section-title">Historische Daten & Statistiken</h2>
+        <div class="period-selector">
+          <button class="btn-period active" data-period="24h">24 Stunden</button>
+          <button class="btn-period" data-period="7d">7 Tage (Woche)</button>
+          <button class="btn-period" data-period="30d">30 Tage (Monat)</button>
+        </div>
+      </div>
+
+      <!-- Min/Avg/Max Summary Table / Cards -->
+      <div class="stats-summary-grid">
+        <div class="stat-box">
+          <h4>Temperatur</h4>
+          <div class="stat-rows">
+            <div class="stat-row"><span class="lbl">Min:</span> <span class="val min" id="stat-temp-min">--</span> °C</div>
+            <div class="stat-row"><span class="lbl">Mittel:</span> <span class="val avg" id="stat-temp-avg">--</span> °C</div>
+            <div class="stat-row"><span class="lbl">Max:</span> <span class="val max" id="stat-temp-max">--</span> °C</div>
+          </div>
+        </div>
+
+        <div class="stat-box">
+          <h4>Luftfeuchte</h4>
+          <div class="stat-rows">
+            <div class="stat-row"><span class="lbl">Min:</span> <span class="val min" id="stat-hum-min">--</span> %</div>
+            <div class="stat-row"><span class="lbl">Mittel:</span> <span class="val avg" id="stat-hum-avg">--</span> %</div>
+            <div class="stat-row"><span class="lbl">Max:</span> <span class="val max" id="stat-hum-max">--</span> %</div>
+          </div>
+        </div>
+
+        <div class="stat-box">
+          <h4>Luftdruck (QNH)</h4>
+          <div class="stat-rows">
+            <div class="stat-row"><span class="lbl">Min:</span> <span class="val min" id="stat-qnh-min">--</span> hPa</div>
+            <div class="stat-row"><span class="lbl">Mittel:</span> <span class="val avg" id="stat-qnh-avg">--</span> hPa</div>
+            <div class="stat-row"><span class="lbl">Max:</span> <span class="val max" id="stat-qnh-max">--</span> hPa</div>
+          </div>
+        </div>
+
+        <div class="stat-box">
+          <h4>Taupunkt</h4>
+          <div class="stat-rows">
+            <div class="stat-row"><span class="lbl">Min:</span> <span class="val min" id="stat-dew-min">--</span> °C</div>
+            <div class="stat-row"><span class="lbl">Mittel:</span> <span class="val avg" id="stat-dew-avg">--</span> °C</div>
+            <div class="stat-row"><span class="lbl">Max:</span> <span class="val max" id="stat-dew-max">--</span> °C</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Tabs / Accordion -->
+      <div class="charts-container card">
+        <div class="chart-tab-bar">
+          <button class="chart-tab active" data-chart="temp">Temperatur & Taupunkt</button>
+          <button class="chart-tab" data-chart="hum">Luftfeuchtigkeit</button>
+          <button class="chart-tab" data-chart="press">Luftdruck (QNH / QFE)</button>
+        </div>
+
+        <div class="chart-canvas-wrapper">
+          <canvas id="historyChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Info & Interfaces Footer -->
+    <footer class="app-footer">
+      <div class="footer-col">
+        <h4>TCP Live-Schnittstelle</h4>
+        <p>Direkte Plaintext-Abfrage im lokalen Netzwerk:</p>
+        <code>nc {{ request.host.split(':')[0] }} 4001</code>
+      </div>
+      <div class="footer-col">
+        <h4>REST API</h4>
+        <p>
+          <a href="/api/current" target="_blank"><code>/api/current</code></a> | 
+          <a href="/api/history?period=24h" target="_blank"><code>/api/history?period=24h</code></a> | 
+          <a href="/api/status" target="_blank"><code>/api/status</code></a>
+        </p>
+      </div>
+      <div class="footer-col right">
+        <h4>System</h4>
+        <p>Raspberry Pi 4 WX-Station | RRDtool Engine</p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/static/js/chart.umd.min.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

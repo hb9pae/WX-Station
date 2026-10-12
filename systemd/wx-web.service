@@ -1,0 +1,23 @@
+[Unit]
+Description=WX-Station Web Dashboard & REST API
+After=network.target wx-collector.service
+Wants=wx-collector.service
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/WX-Station
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 -u -m wx_station.web -c /home/pi/WX-Station/config.yaml
+Restart=always
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=5
+
+# Hardening
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=wx-web
+
+[Install]
+WantedBy=multi-user.target
