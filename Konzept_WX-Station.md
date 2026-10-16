@@ -28,4 +28,8 @@ Erstelle ein Konzept
 
 - Erstelle ein neues Dokument mit den Realiserungsvarienten  
 
- 
+Ergänze die bestehende Version
+- Konfiguration "config.yaml" in als ini-Datei  (Configparser) umstellen 
+- Titel auf dem GUI soll durch den Operator anpassbar (Eintrag in der ini-Datei)
+- Farbschema DARK / LIGHT ermöglichen (ini-Datei)
+

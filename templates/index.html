@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="{{ theme }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ station_name }} - Dashboard</title>
+  <title>{{ title }}</title>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -18,8 +18,11 @@
           </svg>
         </div>
         <div>
-          <h1 id="station-title">{{ station_name }}</h1>
+          <h1 id="station-title">{{ title }}</h1>
           <div class="station-meta">
+            {% if title != station_name %}
+            <span class="badge badge-station" id="station-badge">{{ station_name }}</span>
+            {% endif %}
             <span class="badge badge-alt">{{ altitude_m }} m ü. M.</span>
             <span class="badge badge-sensor" id="sensor-badge">Sensor: --</span>
             <span class="badge badge-status" id="status-badge"><span class="dot"></span> Online</span>

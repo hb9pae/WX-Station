@@ -35,6 +35,8 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
             station_name=config.station.name,
             altitude_m=config.station.altitude_m,
             refresh_interval=config.web.refresh_interval_s,
+            title=config.web.title,
+            theme=config.web.theme,
         )
 
     @app.route("/api/current")
@@ -68,6 +70,8 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
         return jsonify({
             "status": "online" if current else "waiting_for_data",
             "station_name": config.station.name,
+            "title": config.web.title,
+            "theme": config.web.theme,
             "altitude_m": config.station.altitude_m,
             "sensor_model": current.get("sensor_model", "Unknown") if current else "Unknown",
             "last_reading": current.get("iso_time") if current else None,
@@ -83,7 +87,7 @@ def create_app(config: Optional[AppConfig] = None) -> Flask:
 
 def main():
     parser = argparse.ArgumentParser(description="WX-Station Web Service")
-    parser.add_argument("-c", "--config", default="config.yaml", help="Path to configuration file")
+    parser.add_argument("-c", "--config", default="config.ini", help="Path to configuration INI file")
     parser.add_argument("-p", "--port", type=int, default=None, help="Override port")
     args = parser.parse_args()
 

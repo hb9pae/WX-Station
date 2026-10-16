@@ -8,7 +8,7 @@ Type=simple
 User=pi
 WorkingDirectory=/home/pi/WX-Station
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/usr/bin/python3 -u -m wx_station.web -c /home/pi/WX-Station/config.yaml
+ExecStart=/usr/bin/python3 -u -m wx_station.web -c /home/pi/WX-Station/config.ini
 Restart=always
 RestartSec=5
 KillSignal=SIGTERM

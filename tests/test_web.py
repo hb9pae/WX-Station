@@ -87,7 +87,24 @@ class TestWebService(unittest.TestCase):
         data = res.get_json()
         self.assertEqual(data["status"], "online")
         self.assertEqual(data["station_name"], "Web-Test Station")
+        self.assertEqual(data["title"], "WX-Station Wetter Dashboard")
+        self.assertEqual(data["theme"], "dark")
         self.assertEqual(data["sensor_model"], "BME280")
+
+    def test_custom_title_and_theme_in_index(self):
+        custom_cfg = AppConfig(
+            station=StationConfig(name="Custom Station", altitude_m=500.0),
+            sensor=SensorConfig(bus=1, address="auto"),
+            collector=CollectorConfig(interval_s=300, ram_cache_path=self.cache_path, rrd_path=self.rrd_path),
+            tcp=TcpConfig(enabled=False),
+            web=WebConfig(host="127.0.0.1", port=8080, refresh_interval_s=10, title="Mein Wetter Cockpit", theme="light"),
+        )
+        custom_app = create_app(custom_cfg)
+        client = custom_app.test_client()
+        res = client.get("/")
+        self.assertEqual(res.status_code, 200)
+        self.assertIn(b"Mein Wetter Cockpit", res.data)
+        self.assertIn(b'data-theme="light"', res.data)
 
     def test_health(self):
         res = self.client.get("/health")

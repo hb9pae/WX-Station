@@ -51,33 +51,37 @@ Interaktive Kommandos: `GET`, `JSON`, `PLAIN`, `QUIT`.
 
 ## 3. Konfiguration
 
-Die Einstellungen befinden sich in `config.yaml`:
-```yaml
-station:
-  name: "WX-Station Raspberry Pi 4"
-  altitude_m: 450.0  # Stationshöhe für QNH-Berechnung
+Die Einstellungen befinden sich in `config.ini` (INI-Format, Standardbibliothek `configparser`):
+```ini
+[station]
+name = WX-Station Raspberry Pi 4
+altitude_m = 450.0  # Stationshöhe für QNH-Berechnung
 
-sensor:
-  bus: 1             # I2C-Bus (/dev/i2c-1)
-  address: "auto"    # "auto", 0x76 oder 0x77
-  samples: 3         # Median-Burst-Samples
-  sample_delay: 0.5
+[sensor]
+bus = 1             # I2C-Bus (/dev/i2c-1)
+address = auto      # "auto", 0x76 oder 0x77
+samples = 3         # Median-Burst-Samples
+sample_delay = 0.5
 
-collector:
-  interval_s: 300    # 5 Minuten
-  ram_cache_path: "/dev/shm/wx_current.json"
-  rrd_path: "/home/pi/WX-Station/data/wx_station.rrd"
+[collector]
+interval_s = 300    # 5 Minuten
+ram_cache_path = /dev/shm/wx_current.json
+rrd_path = /home/pi/WX-Station/data/wx_station.rrd
 
-tcp:
-  enabled: true
-  host: "0.0.0.0"
-  port: 4001
-  format: "plaintext"
+[tcp]
+enabled = true
+host = 0.0.0.0
+port = 4001
+format = plaintext  # "plaintext" oder "json"
 
-web:
-  host: "0.0.0.0"
-  port: 8080
-  refresh_interval_s: 15
+[web]
+host = 0.0.0.0
+port = 8080
+refresh_interval_s = 15
+# Individueller Titel für das Web-Dashboard (durch Operator anpassbar)
+title = WX-Station Wetter Dashboard
+# Farbschema: "dark" oder "light"
+theme = dark
 ```
 
 ---

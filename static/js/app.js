@@ -60,8 +60,23 @@
   updateClock();
 
   /* =========================================================================
-     2. SVG Gauge Drawing Engine
+     2. SVG Gauge Drawing Engine & Theme Helpers
      ========================================================================= */
+  function getThemeColors() {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    return {
+      isLight: isLight,
+      trackColor: isLight ? '#e2e8f0' : '#1e293b',
+      centerFill: isLight ? '#ffffff' : '#0f172a',
+      labelColor: isLight ? '#64748b' : '#94a3b8',
+      chartText: isLight ? '#334155' : '#cbd5e1',
+      chartGrid: isLight ? 'rgba(203, 213, 225, 0.6)' : 'rgba(51, 65, 85, 0.3)',
+      tooltipBg: isLight ? '#ffffff' : '#0f172a',
+      tooltipBorder: isLight ? '#cbd5e1' : '#334155',
+      tooltipTitle: isLight ? '#0284c7' : '#38bdf8',
+    };
+  }
+
   function polarToCartesian(cx, cy, radius, angleInDegrees) {
     const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
     return {
@@ -82,6 +97,7 @@
 
   function renderGauge(svg, minVal, maxVal, currentVal, options) {
     if (!svg) return;
+    const theme = getThemeColors();
     const cx = 100;
     const cy = 95;
     const radius = 70;
@@ -110,8 +126,8 @@
       'Z'
     ].join(' ');
 
-    const strokeColor = options.color || '#38bdf8';
-    const trackColor = '#1e293b';
+    const strokeColor = options.color || (theme.isLight ? '#0284c7' : '#38bdf8');
+    const trackColor = theme.trackColor;
 
     svg.innerHTML = `
       <!-- Background Track -->
@@ -119,11 +135,11 @@
       <!-- Value Arc -->
       <path d="${valArcPath}" fill="none" stroke="${strokeColor}" stroke-width="12" stroke-linecap="round"/>
       <!-- Min/Max labels -->
-      <text x="25" y="112" font-size="10" fill="#64748b" text-anchor="middle">${minVal}</text>
-      <text x="175" y="112" font-size="10" fill="#64748b" text-anchor="middle">${maxVal}</text>
+      <text x="25" y="112" font-size="10" fill="${theme.labelColor}" text-anchor="middle">${minVal}</text>
+      <text x="175" y="112" font-size="10" fill="${theme.labelColor}" text-anchor="middle">${maxVal}</text>
       <!-- Needle -->
       <path d="${needlePath}" fill="${strokeColor}" opacity="0.9"/>
-      <circle cx="${cx}" cy="${cy}" r="6" fill="#0f172a" stroke="${strokeColor}" stroke-width="3"/>
+      <circle cx="${cx}" cy="${cy}" r="6" fill="${theme.centerFill}" stroke="${strokeColor}" stroke-width="3"/>
     `;
   }
 
@@ -290,6 +306,8 @@
       chartInstance.destroy();
     }
 
+    const theme = getThemeColors();
+
     chartInstance = new window.Chart(ctx, {
       type: 'line',
       data: {
@@ -306,29 +324,30 @@
         plugins: {
           legend: {
             labels: {
-              color: '#cbd5e1',
+              color: theme.chartText,
               font: { family: 'inherit' }
             }
           },
           tooltip: {
-            backgroundColor: '#0f172a',
-            titleColor: '#38bdf8',
-            borderColor: '#334155',
+            backgroundColor: theme.tooltipBg,
+            titleColor: theme.tooltipTitle,
+            bodyColor: theme.chartText,
+            borderColor: theme.tooltipBorder,
             borderWidth: 1,
             padding: 10
           }
         },
         scales: {
           x: {
-            grid: { color: 'rgba(51, 65, 85, 0.3)' },
+            grid: { color: theme.chartGrid },
             ticks: {
-              color: '#94a3b8',
+              color: theme.labelColor,
               maxTicksLimit: 12
             }
           },
           y: {
-            grid: { color: 'rgba(51, 65, 85, 0.4)' },
-            ticks: { color: '#94a3b8' }
+            grid: { color: theme.chartGrid },
+            ticks: { color: theme.labelColor }
           }
         }
       }

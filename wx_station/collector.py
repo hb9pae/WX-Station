@@ -133,8 +133,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="WX-Station Collector Daemon")
     parser.add_argument(
         "-c", "--config",
-        default="config.yaml",
-        help="Path to configuration YAML file"
+        default="config.ini",
+        help="Path to configuration INI file"
     )
     parser.add_argument(
         "--once",
