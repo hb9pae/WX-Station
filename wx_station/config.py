@@ -73,6 +73,14 @@ def load_config(config_path: str = "config.ini") -> AppConfig:
     """Loads configuration from INI file with fallbacks to defaults."""
     parser = configparser.ConfigParser(inline_comment_prefixes=("#", ";"))
 
+    if not os.path.exists(config_path):
+        # Fallback if a legacy .yaml extension was requested but .ini exists
+        if config_path.endswith((".yaml", ".yml")):
+            ini_candidate = os.path.splitext(config_path)[0] + ".ini"
+            if os.path.exists(ini_candidate):
+                print(f"Notice: '{config_path}' not found, using '{ini_candidate}' instead.")
+                config_path = ini_candidate
+
     if os.path.exists(config_path):
         try:
             parser.read(config_path, encoding="utf-8")
@@ -82,6 +90,8 @@ def load_config(config_path: str = "config.ini") -> AppConfig:
         # Check if legacy config.yaml or config.ini exists in project root
         if config_path == "config.ini" and not os.path.exists("config.ini") and os.path.exists("config.yaml"):
             print("Notice: config.ini not found, but config.yaml exists. Please migrate to config.ini.")
+        else:
+            print(f"Warning: Configuration file '{config_path}' not found. Using defaults.")
 
     # Station
     station_name = parser.get("station", "name", fallback="WX-Station Raspberry Pi 4").strip()

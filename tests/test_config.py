@@ -119,6 +119,19 @@ theme = light
         cfg = load_config(self.ini_path)
         self.assertEqual(cfg.web.title, "Alpnach Station")
 
+    def test_legacy_yaml_extension_fallback_to_ini(self):
+        content = """
+[web]
+title = Legacy Test Station
+"""
+        with open(self.ini_path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        # Übergebe .yaml Pfad, der nicht existiert, aber .ini existiert
+        yaml_path = os.path.splitext(self.ini_path)[0] + ".yaml"
+        cfg = load_config(yaml_path)
+        self.assertEqual(cfg.web.title, "Legacy Test Station")
+
 
 if __name__ == "__main__":
     unittest.main()
